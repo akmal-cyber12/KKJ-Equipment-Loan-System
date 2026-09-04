@@ -7,6 +7,6 @@
 // ================================================
 
 window.KKJ_CONFIG = {
-  SUPABASE_URL: "PASTE_YOUR_SUPABASE_URL_HERE",
-  SUPABASE_ANON_KEY: "PASTE_YOUR_SUPABASE_ANON_KEY_HERE"
+  SUPABASE_URL: "https://cfgwmhmmvlaenubdnapz.supabase.com",
+  SUPABASE_ANON_KEY: "sb_publishable_hhFnC4zANEX5-28_TDHFYw_VmU4AvLq"
 };
