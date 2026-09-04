@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#071326" />
+  <title>KKJ Inventory — Sistem Inventori Makmal Komputer</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- LOGIN -->
+  <section id="authView" class="auth-shell">
+    <div class="auth-card">
+      <div class="brand brand-center">
+        <img src="assets/logo-kkj.png" alt="Logo Kolej Kemahiran Johor" class="brand-logo" />
+        <div>
+          <h1>KKJ Inventory</h1>
+          <p>Sistem Inventori Makmal Komputer</p>
+        </div>
+      </div>
+
+      <div class="auth-copy">
+        <span class="eyebrow">Kolej Kemahiran Johor</span>
+        <h2>Log masuk ke sistem</h2>
+        <p>Gunakan akaun Admin atau Technician yang telah didaftarkan dalam Supabase Auth.</p>
+      </div>
+
+      <form id="loginForm" class="form-stack">
+        <label>
+          <span>Email</span>
+          <input id="loginEmail" type="email" autocomplete="email" placeholder="nama@kkj.edu.my" required />
+        </label>
+
+        <label>
+          <span>Kata laluan</span>
+          <div class="password-wrap">
+            <input id="loginPassword" type="password" autocomplete="current-password" placeholder="••••••••" required minlength="6" />
+            <button id="togglePassword" class="ghost-mini" type="button" aria-label="Tunjuk kata laluan">Lihat</button>
+          </div>
+        </label>
+
+        <button class="btn btn-primary btn-block" type="submit">
+          <span>Log Masuk</span>
+        </button>
+      </form>
+
+      <div class="auth-note">
+        <strong>Setup pertama?</strong>
+        <span>Buka <code>README.md</code> dan ikut langkah Supabase.</span>
+      </div>
+    </div>
+
+    <div class="auth-visual">
+      <div class="visual-panel">
+        <span class="eyebrow">V1 • Cloud Inventory</span>
+        <h2>Aset makmal lebih tersusun, mudah dicari dan boleh diurus dari phone.</h2>
+        <div class="visual-grid">
+          <div><b>CRUD</b><span>Aset</span></div>
+          <div><b>Cloud</b><span>PostgreSQL</span></div>
+          <div><b>RLS</b><span>Security</span></div>
+          <div><b>2 Role</b><span>Admin / Technician</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- APP -->
+  <div id="appView" class="app-shell hidden">
+    <aside id="sidebar" class="sidebar">
+      <div class="brand sidebar-brand">
+        <img src="assets/logo-kkj.png" alt="Logo KKJ" class="brand-logo small" />
+        <div>
+          <h1>KKJ Inventory</h1>
+          <p>Makmal Komputer</p>
+        </div>
+      </div>
+
+      <nav class="nav-list" aria-label="Navigasi utama">
+        <button class="nav-item active" data-page="dashboard">
+          <span class="nav-icon">⌂</span><span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-page="assets">
+          <span class="nav-icon">▣</span><span>Aset</span>
+        </button>
+        <button class="nav-item" data-page="categories">
+          <span class="nav-icon">◫</span><span>Kategori</span>
+        </button>
+        <button class="nav-item" data-page="locations">
+          <span class="nav-icon">⌖</span><span>Lokasi</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <div class="user-chip">
+          <div class="avatar" id="userInitial">U</div>
+          <div class="user-meta">
+            <strong id="sidebarUserName">Pengguna</strong>
+            <span id="sidebarUserRole">Technician</span>
+          </div>
+        </div>
+        <button id="logoutBtn" class="btn btn-danger-soft btn-block">Log Keluar</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button id="menuBtn" class="icon-btn mobile-only" aria-label="Buka menu">☰</button>
+        <div>
+          <p class="topbar-kicker">Kolej Kemahiran Johor</p>
+          <h2 id="pageTitle">Dashboard</h2>
+        </div>
+        <div class="topbar-actions">
+          <span id="connectionPill" class="status-pill neutral">Supabase</span>
+          <button id="quickAddBtn" class="btn btn-primary">+ Tambah Aset</button>
+        </div>
+      </header>
+
+      <section class="content">
+        <!-- DASHBOARD PAGE -->
+        <div id="page-dashboard" class="page active">
+          <div class="hero-card">
+            <div>
+              <span class="eyebrow">Ringkasan inventori</span>
+              <h3 id="welcomeTitle">Selamat datang</h3>
+              <p>Pantau aset makmal, keadaan peralatan dan lokasi daripada satu dashboard.</p>
+            </div>
+            <img src="assets/logo-kkj.png" alt="" />
+          </div>
+
+          <div class="stats-grid">
+            <article class="stat-card">
+              <div class="stat-icon">▣</div>
+              <div><span>Jumlah Aset</span><strong id="statTotal">0</strong></div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-icon ok">✓</div>
+              <div><span>Aktif / Baik</span><strong id="statActive">0</strong></div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-icon warn">!</div>
+              <div><span>Perlu Perhatian</span><strong id="statAttention">0</strong></div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-icon info">⌖</div>
+              <div><span>Lokasi</span><strong id="statLocations">0</strong></div>
+            </article>
+          </div>
+
+          <div class="grid-2">
+            <article class="panel">
+              <div class="panel-head">
+                <div>
+                  <span class="eyebrow">Terkini</span>
+                  <h3>Aset terbaru</h3>
+                </div>
+                <button class="text-btn" data-go="assets">Lihat semua</button>
+              </div>
+              <div id="recentAssets" class="recent-list empty-state">Belum ada aset.</div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-head">
+                <div>
+                  <span class="eyebrow">Status</span>
+                  <h3>Kesihatan inventori</h3>
+                </div>
+              </div>
+              <div id="healthBars" class="health-bars"></div>
+            </article>
+          </div>
+        </div>
+
+        <!-- ASSETS PAGE -->
+        <div id="page-assets" class="page">
+          <div class="page-actions">
+            <div class="filter-row">
+              <input id="assetSearch" class="control" type="search" placeholder="Cari asset tag, nama, serial..." />
+              <select id="filterCategory" class="control"><option value="">Semua kategori</option></select>
+              <select id="filterLocation" class="control"><option value="">Semua lokasi</option></select>
+              <select id="filterStatus" class="control">
+                <option value="">Semua status</option>
+                <option>Aktif</option>
+                <option>Dalam Penyelenggaraan</option>
+                <option>Rosak</option>
+                <option>Dilupuskan</option>
+              </select>
+            </div>
+            <button id="addAssetBtn" class="btn btn-primary">+ Tambah Aset</button>
+          </div>
+
+          <article class="panel table-panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Asset Tag</th>
+                    <th>Aset</th>
+                    <th>Kategori</th>
+                    <th>Lokasi</th>
+                    <th>Status</th>
+                    <th>Kondisi</th>
+                    <th class="text-right">Tindakan</th>
+                  </tr>
+                </thead>
+                <tbody id="assetTableBody"></tbody>
+              </table>
+            </div>
+            <div id="assetEmpty" class="empty-state hidden">Tiada aset ditemui.</div>
+          </article>
+        </div>
+
+        <!-- CATEGORIES -->
+        <div id="page-categories" class="page">
+          <div class="page-actions">
+            <div>
+              <span class="eyebrow">Master data</span>
+              <h3 class="section-title">Kategori Aset</h3>
+            </div>
+            <button id="addCategoryBtn" class="btn btn-primary admin-only">+ Tambah Kategori</button>
+          </div>
+          <article class="panel table-panel">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Nama Kategori</th><th>Penerangan</th><th class="text-right">Tindakan</th></tr></thead>
+                <tbody id="categoryTableBody"></tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+
+        <!-- LOCATIONS -->
+        <div id="page-locations" class="page">
+          <div class="page-actions">
+            <div>
+              <span class="eyebrow">Master data</span>
+              <h3 class="section-title">Lokasi Makmal</h3>
+            </div>
+            <button id="addLocationBtn" class="btn btn-primary admin-only">+ Tambah Lokasi</button>
+          </div>
+          <article class="panel table-panel">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Nama Lokasi</th><th>Kod</th><th>Penerangan</th><th class="text-right">Tindakan</th></tr></thead>
+                <tbody id="locationTableBody"></tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ASSET MODAL -->
+  <dialog id="assetModal" class="modal">
+    <form id="assetForm" method="dialog">
+      <div class="modal-head">
+        <div><span class="eyebrow">Inventori</span><h3 id="assetModalTitle">Tambah Aset</h3></div>
+        <button type="button" class="icon-btn" data-close="assetModal">✕</button>
+      </div>
+
+      <input id="assetId" type="hidden" />
+
+      <div class="form-grid">
+        <label><span>Asset Tag *</span><input id="assetTag" required placeholder="KKJ-PC-001" /></label>
+        <label><span>Nama Aset *</span><input id="assetName" required placeholder="Dell OptiPlex 7090" /></label>
+        <label><span>Kategori *</span><select id="assetCategory" required></select></label>
+        <label><span>Lokasi *</span><select id="assetLocation" required></select></label>
+        <label><span>Serial Number</span><input id="assetSerial" placeholder="SN123456" /></label>
+        <label><span>Jenama</span><input id="assetBrand" placeholder="Dell" /></label>
+        <label><span>Model</span><input id="assetModel" placeholder="OptiPlex 7090" /></label>
+        <label><span>Status</span>
+          <select id="assetStatus">
+            <option>Aktif</option>
+            <option>Dalam Penyelenggaraan</option>
+            <option>Rosak</option>
+            <option>Dilupuskan</option>
+          </select>
+        </label>
+        <label><span>Kondisi</span>
+          <select id="assetCondition">
+            <option>Baik</option>
+            <option>Sederhana</option>
+            <option>Perlu Dibaiki</option>
+            <option>Rosak</option>
+          </select>
+        </label>
+        <label><span>Tarikh Pembelian</span><input id="purchaseDate" type="date" /></label>
+        <label><span>Harga (RM)</span><input id="purchasePrice" type="number" min="0" step="0.01" placeholder="0.00" /></label>
+        <label><span>Warranty Tamat</span><input id="warrantyUntil" type="date" /></label>
+        <label class="span-2"><span>Catatan</span><textarea id="assetNotes" rows="3" placeholder="Maklumat tambahan..."></textarea></label>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" data-close="assetModal">Batal</button>
+        <button type="submit" class="btn btn-primary">Simpan Aset</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- SIMPLE MASTER MODAL -->
+  <dialog id="masterModal" class="modal modal-small">
+    <form id="masterForm" method="dialog">
+      <div class="modal-head">
+        <div><span class="eyebrow">Master data</span><h3 id="masterModalTitle">Tambah</h3></div>
+        <button type="button" class="icon-btn" data-close="masterModal">✕</button>
+      </div>
+      <input id="masterType" type="hidden" />
+      <input id="masterId" type="hidden" />
+      <div class="form-stack">
+        <label><span>Nama *</span><input id="masterName" required /></label>
+        <label id="masterCodeWrap"><span>Kod</span><input id="masterCode" placeholder="DSK1" /></label>
+        <label><span>Penerangan</span><textarea id="masterDescription" rows="3"></textarea></label>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" data-close="masterModal">Batal</button>
+        <button type="submit" class="btn btn-primary">Simpan</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
